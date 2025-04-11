@@ -1,45 +1,33 @@
 import streamlit as st
 
-def get_required_elongation(material, diameter):
-    material = material.lower()
-    if material == "aluminium 1350":
-        if 1.5 < diameter <= 2.5:
-            return 0.8
-        elif 2.5 < diameter <= 3.25:
-            return 1.0
-        elif 3.25 < diameter <= 4.0:
-            return 1.2
-        elif 4.0 < diameter <= 4.75:
-            return 1.4
-    elif material == "alloy 1120":
-        if 1.5 < diameter <= 4.75:
-            return 3.0
-    elif material == "alloy 6201a":
-        if 1.5 < diameter <= 2.5:
-            return 0.8
-        elif 2.5 < diameter <= 3.25:
-            return 1.0
-        elif 3.25 < diameter <= 4.0:
-            return 1.2
-        elif 4.0 < diameter <= 4.75:
-            return 1.4
-    raise ValueError("Invalid material or unsupported diameter.")
-
-# Streamlit UI
+# Title
 st.title("Elongation Test Checker")
 
-material = st.selectbox("Select Material", ["Aluminium 1350", "Alloy 1120", "Alloy 6201A"])
-diameter = st.number_input("Enter Wire Diameter (mm)", min_value=1.0, max_value=5.0, step=0.01)
-final_length = st.number_input("Enter Final Length after Elongation (mm)", min_value=0.0, step=0.1)
+# Material selection
+material = st.selectbox("Select Material", ["Steel", "Aluminum", "Copper"])
 
+# User inputs
+actual_length = st.number_input("Enter Actual Length (mm)", min_value=0.0, format="%.2f")
+elongation_percent = st.number_input("Enter Elongation (%)", min_value=0.0, format="%.2f")
+
+# Run calculation when button is clicked
 if st.button("Check Result"):
-    try:
-        original_length = 250
-        required = get_required_elongation(material, diameter)
-        actual = ((final_length - original_length) / original_length) * 100
-        result = "PASS" if actual >= required else "FAIL"
-        st.success(f"Required Elongation: {required}%")
-        st.info(f"Measured Elongation: {round(actual, 2)}%")
-        st.write(f"**Result: {result}**")
-    except Exception as e:
-        st.error(str(e))
+    elongation = (elongation_percent / 100) * actual_length
+    st.write(f"Elongation (mm): **{elongation:.2f} mm**")
+
+    # Add your logic here based on material
+    if material == "Steel":
+        if elongation_percent >= 10:
+            st.success("Steel passed the elongation test.")
+        else:
+            st.error("Steel failed the elongation test.")
+    elif material == "Aluminum":
+        if elongation_percent >= 12:
+            st.success("Aluminum passed the elongation test.")
+        else:
+            st.error("Aluminum failed the elongation test.")
+    elif material == "Copper":
+        if elongation_percent >= 15:
+            st.success("Copper passed the elongation test.")
+        else:
+            st.error("Copper failed the elongation test.")
